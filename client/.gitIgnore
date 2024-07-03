@@ -1,0 +1,40 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Build directories
+dist/
+build/
+
+# Environment variables
+.env
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Client specific ignores
+/client/node_modules/
+/client/dist/
+/client/build/
+/client/.env
+
+# Server specific ignores
+/server/node_modules/
+/server/dist/
+/server/build/
+/server/.env
+
+# IDE specific ignores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
