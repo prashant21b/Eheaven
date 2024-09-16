@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-const orderSchema = new mongoose.Schema({
 
+// Order Schema
+const orderSchema = new mongoose.Schema({
   orderNumber: {
     type: String,
     required: true,
@@ -35,9 +36,9 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  paymentMethod:{
+  paymentMethod: {
     type: String,
-    default:'cash',
+    default: 'cash',
   },
   paymentStatus: {
     type: String,
@@ -49,6 +50,13 @@ const orderSchema = new mongoose.Schema({
     enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled'],
     default: 'Processing',
   },
+  paymentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Payment',
+    // required: function () {
+    //   return this.paymentMethod === 'online'; 
+    // },
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -58,6 +66,7 @@ const orderSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
 const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;

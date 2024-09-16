@@ -5,6 +5,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast';
 import {useNavigate } from 'react-router-dom';
 import { useSelector} from 'react-redux';
+import { baseURL } from '../url';
 function EditableProfile() {
     const token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
@@ -17,7 +18,7 @@ function EditableProfile() {
 const navigate=useNavigate();
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('/api/v1/updateprofile', {
+            const response = await axios.post(`${baseURL}/api/v1/updateprofile`, {
                 id:decodedToken.id,
                 name: name,
                 email: email,

@@ -3,6 +3,7 @@ import './Login.css'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+ import { baseURL } from '../url'
 export const Login = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -17,7 +18,7 @@ export const Login = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			const response = await axios.post('/api/v1/login', {
+			const response = await axios.post(`${baseURL}/api/v1/login`, {
 				email: email,
 				password: password
 			});

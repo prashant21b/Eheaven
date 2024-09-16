@@ -6,7 +6,8 @@ import {BiArrowBack} from 'react-icons/bi'
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { baseURL } from '../url';
+import './MyOrder.css'
 const containerStyles = {
   display: 'flex',
   flexDirection: 'column',
@@ -27,7 +28,7 @@ export const MyOrder = () => {
   const [products, setProduct] = useState();
   async function getOrder() {
     try {
-      const response = await axios.post('/api/v1/getorder', {
+      const response = await axios.post(`${baseURL}/api/v1/getorder`, {
         user: decodedToken.id,
       })
       console.log("18", response.data.data)

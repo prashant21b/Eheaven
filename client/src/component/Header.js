@@ -4,14 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { storeproduct } from '../redux/slices/productSlice';
 import './Header.css';
-
+import { baseURL } from '../url';
 export const Header = () => {
     const [product, setProduct] = useState([]);
     const dispatch = useDispatch();
 
     async function getAllProduct() {
         try {
-            const response = await axios.get('/api/v1/product');
+            const response = await axios.get(`${baseURL}/api/v1/product`);
             const result = response.data;
             const products = result.data;
             setProduct(products);

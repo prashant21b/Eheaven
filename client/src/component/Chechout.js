@@ -6,11 +6,14 @@ import {jwtDecode} from 'jwt-decode';
 import axios from 'axios'
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { baseURL } from '../url';
+import { clearCart } from '../redux/slices/cartSlice';
 export const Chechout = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token)
     const cart = useSelector((state) => state.cart.cart);
+    const dispatch=useDispatch();
     const totalCartQuantity = () => {
         let sum = 0
         for (let i = 0; i < cart.length; i++) {
@@ -60,8 +63,31 @@ export const Chechout = () => {
     console.log(decodedToken.id);
     const cashOnDeliveryHandler = async (e) => {
         e.preventDefault();
+    
+        // Validate form fields
+        if (!name) {
+            toast.error('Full Name is required');
+            return;
+        }
+        if (!phone) {
+            toast.error('Phone Number is required');
+            return;
+        }
+        if (!email) {
+            toast.error('Email Address is required');
+            return;
+        }
+        if (!pin) {
+            toast.error('Pin-code is required');
+            return;
+        }
+        if (!address) {
+            toast.error('Address is required');
+            return;
+        }
+    
         try {
-            const response = await axios.post('/api/v1/addorder', {
+            const response = await axios.post(`${baseURL}/api/v1/addorder`, {
                 user: decodedToken.id,
                 products: products,
                 shippingAddress: {
@@ -73,21 +99,24 @@ export const Chechout = () => {
                     // paymentMethod:paymentMethod,
                 },
                 totalAmount: totalCartPrice(),
-
-            })
+            });
+    
             if (response.status === 201) {
-                toast.success('Order Places sucessfully')
+                toast.success('Order Placed successfully');
+                dispatch(clearCart())
                 navigate('/myorder');
+               
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.log(error);
+            toast.error('Failed to place the order');
         }
-    }
+    };
+    
     const amount = totalCartPrice()
     async function addOrderToDatabase(options) {
         try {
-            const res = await axios.post('/api/v1/addorder', {
+            const res = await axios.post(`${baseURL}/api/v1/addorder`, {
                 user: decodedToken.id,
                 products: products,
                 shippingAddress: {
@@ -109,11 +138,41 @@ export const Chechout = () => {
         }
     }
     async function checkoutHandler() {
+        if (!name) {
+            toast.error('Full Name is required');
+            return;
+        }
+        if (!phone) {
+            toast.error('Phone Number is required');
+            return;
+        }
+        if (!email) {
+            toast.error('Email Address is required');
+            return;
+        }
+        if (!pin) {
+            toast.error('Pin-code is required');
+            return;
+        }
+        if (!address) {
+            toast.error('Address is required');
+            return;
+        }
+    
+        const { data: { key } } = await axios.get(`${baseURL}/api/getkey`)
 
-        const { data: { key } } = await axios.get("/api/getkey")
-
-        const { data: { order } } = await axios.post("/api/v1/checkout", {
-            amount
+        const { data: { order } } = await axios.post(`${baseURL}/api/v1/checkout`, {
+            amount,
+            user: decodedToken.id,
+                products: products,
+                shippingAddress: {
+                    fullName: name,
+                    phone: phone,
+                    email: email,
+                    pin: pin,
+                    address: address,
+                }
+               
         })
         const options = {
             key,
@@ -203,7 +262,7 @@ export const Chechout = () => {
                                         <div className="d-md-flex align-items-start">
                                             <div className="nav col-md-3 flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                                                 <button className="nav-link fw-bold" id="cashOnDeliveryTab-tab" data-bs-toggle="pill" data-bs-target="#cashOnDeliveryTab" type="button" role="tab" aria-controls="cashOnDeliveryTab" aria-selected="true" onClick={selectCashOndilivery}>Cash on Delivery</button>
-                                                {/* <button className="nav-link fw-bold" id="onlinePayment-tab" data-bs-toggle="pill" data-bs-target="#onlinePayment" type="button" role="tab" aria-controls="onlinePayment" aria-selected="false" onClick={selectOnlineMode}>Online Payment</button> */}
+                                                <button className="nav-link fw-bold" id="onlinePayment-tab" data-bs-toggle="pill" data-bs-target="#onlinePayment" type="button" role="tab" aria-controls="onlinePayment" aria-selected="false" onClick={selectOnlineMode}>Online Payment</button>
                                             </div>
                                             <div className="tab-content col-md-9" id="v-pills-tabContent">
                                                 <div className="tab-pane fade" id="cashOnDeliveryTab" role="tabpanel" aria-labelledby="cashOnDeliveryTab-tab" tabindex="0">
@@ -212,11 +271,11 @@ export const Chechout = () => {
                                                     <button type="button" className="btn btn-primary" onClick={cashOnDeliveryHandler}>Place Order (Cash on Delivery)</button>
 
                                                 </div>
-                                                {/* <div className="tab-pane fade" id="onlinePayment" role="tabpanel" aria-labelledby="onlinePayment-tab" tabindex="0">
+                                                <div className="tab-pane fade" id="onlinePayment" role="tabpanel" aria-labelledby="onlinePayment-tab" tabindex="0">
                                                     <h6>Online Payment Mode</h6>
                                                     <hr />
                                                     <button type="button" className="btn btn-warning" onClick={checkoutHandler}>Pay Now (Online Payment)</button>
-                                                </div> */}
+                                                </div>
                                             </div>
                                         </div>
 
