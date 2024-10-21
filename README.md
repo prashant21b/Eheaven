@@ -3,7 +3,7 @@
   Welcome to our E-Commerce Shopping App! This application is built using React for the frontend, Node.js with Express for the backend, and MongoDB for the database. The app features user authentication, authorization, encryption, and various e-commerce functionalities.
 
 
- ## Live Demo -> https://eheaven-jk659jplw-prashant-jhas-projects.vercel.app
+ ## Live Demo -> https://eheaven-aeebc3c47-prashant-jhas-projects.vercel.app/
  
  
 
