@@ -140,7 +140,7 @@ exports.paymentVerification = async (req, res) => {
           }
 
           res.redirect(
-              `http://localhost:3000/paymentsuccess?reference=${razorpay_payment_id}`
+              ` https://eheaven.vercel.app/paymentsuccess?reference=${razorpay_payment_id}`
           );
       } else {
           // Handle failed payment verification: Remove the order from the Order schema

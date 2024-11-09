@@ -3,18 +3,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { storeproduct } from '../redux/slices/productSlice';
+import { showLoader, hideLoader } from '../redux/slices/loaderSlice';
 import './Header.css';
 import { baseURL } from '../url';
 export const Header = () => {
     const [product, setProduct] = useState([]);
     const dispatch = useDispatch();
-
+    const isLoading = useSelector((state) => state.loader.isLoading);
     async function getAllProduct() {
         try {
+            dispatch(showLoader());
             const response = await axios.get(`${baseURL}/api/v1/product`);
             const result = response.data;
             const products = result.data;
             setProduct(products);
+            dispatch(hideLoader());
             products.forEach((item) => {
                 dispatch(storeproduct(item));
             });
