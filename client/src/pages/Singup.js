@@ -1,107 +1,87 @@
-import React, { useState } from 'react'
-import './Login.css'
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import './Login.css';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import axios from 'axios'
- import { baseURL } from '../url';
+import axios from 'axios';
+import { baseURL } from '../url';
+
 export const Singup = () => {
-	const [name, setname] = useState('');
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [confirmedpassword, setconfirmedPassword] = useState('');
-	const navigate = useNavigate();
-	const handleEmailChange = (e) => {
-		setEmail(e.target.value);
-	};
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmedPassword, setConfirmedPassword] = useState('');
+    const navigate = useNavigate();
 
-	const handlePasswordChange = (e) => {
-		setPassword(e.target.value);
-	};
-	const handleConfirmedPasswordChange = (e) => {
-		setconfirmedPassword(e.target.value);
-	};
-	const handleNameChange = (e) => {
-		setname(e.target.value);
-	}
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		try{
-			if (password === confirmedpassword) {
-				const response = await axios.post(`${baseURL}/api/v1/singup`, 
-					
-					{
-						name: name,
-						email: email,
-						password: password,
-						confirmedPassword: confirmedpassword,
-				});
-				if(response.status===200){
-					navigate('/login');
-					toast.success('Signup successfully');
-					return;
-				}
-				else if(response.status === 400) {
-					const responseData = response.data; // Parse the response data
-					if (responseData.success === false) {
-						toast.error(responseData.message);
-					} else {
-						toast.error('Signup failed');
-					}
-					return;
-				}	
-			} 
-			else {
-				return toast.error('Password does not match');
-			}
-		}
-		catch(error){
-			// console.log("catch block")
-			// console.log(error);
-			toast.error('Error in Singup');
-		}
-		
-	};
-	
-	
-	return (
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-		<div className="form-container">
-			<p className="title">SingUp</p>
-			<form className="form">
-				<div className="input-group">
-					<label for="username">Name</label>
-					<input onChange={handleNameChange} className='inp' type="text" name="name" value={name} id="username" placeholder="Enter your name.." required />
-				</div>
-				<div className="input-group">
-					<label for="username">Email</label>
-					<input onChange={handleEmailChange} className='inp' type="email" name="email" value={email} id="username" placeholder="Enter your email.." required />
-				</div>
-				<div className="input-group">
-					<label for="password">Password</label>
-					<input onChange={handlePasswordChange} className='inp' type="password" name="password" value={password} id="password" placeholder="Enter Your Password" required />
-				</div>
-				<div className="input-group">
-					<label for="password">Confirmed Password</label>
-					<input onChange={handleConfirmedPasswordChange} className='inp' type="password" name="confirmedpassword" value={confirmedpassword} id="password" placeholder="Confirmed Your Password" required />
-				</div>
-				<button style={{ marginTop: '10px' }} className="sign" onClick={handleSubmit}>SingUp</button>
-			</form>
-			<div className="social-message">
-				<div className="line"></div>
-				<p className="message">SingUp with social accounts</p>
-				<div className="line"></div>
-			</div>
-			<div className="social-icons">
-				<button aria-label="Log in with Google" className="icon">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-5 h-5 fill-current">
-						<path d="M16.318 13.714v5.484h9.078c-0.37 2.354-2.745 6.901-9.078 6.901-5.458 0-9.917-4.521-9.917-10.099s4.458-10.099 9.917-10.099c3.109 0 5.193 1.318 6.38 2.464l4.339-4.182c-2.786-2.599-6.396-4.182-10.719-4.182-8.844 0-16 7.151-16 16s7.156 16 16 16c9.234 0 15.365-6.49 15.365-15.635 0-1.052-0.115-1.854-0.255-2.651z"></path>
-					</svg>
-				</button>
-			</div>
-			<p className="signup">Already registered?
-				<Link rel="noopener noreferrer" to="/Login" className="">Login</Link>
-			</p>
-		</div>
-	)
-}
+        // Validation
+        if (!name.trim()) {
+            toast.error('Name is required');
+            return;
+        }
+        if (!email.trim()) {
+            toast.error('Email is required');
+            return;
+        }
+        if (!password.trim()) {
+            toast.error('Password is required');
+            return;
+        }
+        if (password.length < 6) {
+            toast.error('Password must be at least 6 characters long');
+            return;
+        }
+        if (password !== confirmedPassword) {
+            toast.error('Passwords do not match');
+            return;
+        }
+
+        try {
+            const response = await axios.post(`${baseURL}/api/v1/singup`, {
+                name,
+                email,
+                password,
+                confirmedPassword
+            });
+
+            if (response.status === 200) {
+                navigate('/login');
+                toast.success('Signup successful');
+            } else if (response.status === 400) {
+                const responseData = response.data;
+                toast.error(responseData.message || 'Signup failed');
+            }
+        } catch (error) {
+            toast.error('Error in Signup');
+        }
+    };
+
+    return (
+        <div className="form-container">
+            <p className="title">Signup</p>
+            <form className="form" onSubmit={handleSubmit}>
+                <div className="input-group">
+                    <label htmlFor="name">Name</label>
+                    <input onChange={(e) => setName(e.target.value)} className='inp' type="text" name="name" value={name} placeholder="Enter your name.." required />
+                </div>
+                <div className="input-group">
+                    <label htmlFor="email">Email</label>
+                    <input onChange={(e) => setEmail(e.target.value)} className='inp' type="email" name="email" value={email} placeholder="Enter your email.." required />
+                </div>
+                <div className="input-group">
+                    <label htmlFor="password">Password</label>
+                    <input onChange={(e) => setPassword(e.target.value)} className='inp' type="password" name="password" value={password} placeholder="Enter Your Password" required />
+                </div>
+                <div className="input-group">
+                    <label htmlFor="confirmedPassword">Confirm Password</label>
+                    <input onChange={(e) => setConfirmedPassword(e.target.value)} className='inp' type="password" name="confirmedPassword" value={confirmedPassword} placeholder="Confirm Your Password" required />
+                </div>
+                <button style={{ marginTop: '10px' }} className="sign">Signup</button>
+            </form>
+            <p className="signup">Already registered?
+                <Link to="/Login">Login</Link>
+            </p>
+        </div>
+    );
+};

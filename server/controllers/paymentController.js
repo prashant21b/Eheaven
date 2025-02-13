@@ -142,6 +142,7 @@ exports.paymentVerification = async (req, res) => {
           res.redirect(
               ` https://eheaven.vercel.app/paymentsuccess?reference=${razorpay_payment_id}`
           );
+          
       } else {
           // Handle failed payment verification: Remove the order from the Order schema
           await Order.deleteOne({ orderNumber: razorpay_order_id });

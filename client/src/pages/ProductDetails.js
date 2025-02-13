@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './ProductDetails.css'
 import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
@@ -9,8 +9,10 @@ import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 import { ProductCard } from '../component/ProductCard'
-
+import {toast} from 'react-hot-toast'
+//   const  focus=useRef(null)
 export const ProductDetails = () => {
+    
    const  products=useSelector((state)=>state.product.product);
     const {productId} = useParams();
     console.log("productid",productId)
@@ -30,24 +32,38 @@ export const ProductDetails = () => {
     });
     setCategory(similarProduct);
   }
-  
+  const  focus=useRef(null)
+  console.log(focus.current)
+  useEffect(()=>{
+         focus.current.focus()
+  },[productId])
    useEffect(()=>{
     getProductById(addToWishList);
     getAllProctWithSameCategory();
    },[]);
    
    function addToCartHandler(){
+    if(product.stock===0){
+        toast.error("Product is out of Stock")
+        return;
+    }
     dispatch(add(product))
    }
    function addWishListHandler(){
     dispatch(addToWishList(product))
    }
+   useEffect(() => {
+    // Scroll to the top of the page when component mounts or productId changes
+    window.scrollTo(0, 0);
+    // getProductById();
+    // getAllProctWithSameCategory();
+  }, [productId]);
 
     return (
         
-        <div className="py-3 py-md-5 bg-light">
-            <div className="container">
-                <div className="row">
+        <div  className="py-3 py-md-5 bg-light">
+            <div  className="container">
+                <div  ref={focus} className="row">
                     <div className="col-md-5 mt-3">
                         <div className="bg-white border">
                             <img src={product?.thumbnail} className="w-100" alt="Img" />
@@ -87,7 +103,7 @@ export const ProductDetails = () => {
                                 </div>
                             </div>
                             <div className="mt-2">
-                                <Link onClick={addToCartHandler} className="btn btn1"> <i className="fa fa-shopping-cart"></i> Add To Cart</Link>
+                                <Link onClick={addToCartHandler} className="btn btn1"> <i className="fa fa-shopping-cart" ></i> Add To Cart</Link>
                                 <Link onClick={addWishListHandler} className="btn btn1"> <i className="fa fa-heart"></i> Add To Wishlist </Link>
                             </div>
                             <div className="mt-3">

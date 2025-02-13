@@ -1,60 +1,63 @@
-import React,{useEffect, useState} from 'react'
-import { ProductCard } from '../component/ProductCard'
-import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { ProductCard } from '../component/ProductCard';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import Fuse from 'fuse.js';
+import { Pagination } from '../component/Pagination';
+
 export const Search = () => {
-    const product=useSelector((state)=>state.product.product);
-    const [filteredProduct,setFilteredProduct]=useState([]);
-    const {query}=useParams();
-    function getAllFilteredProduct(){
-        const queryLowerCase = query.toLowerCase();
-        const uniqueProducts = new Set(); 
-      
-        const filteredProducts = product.filter((product) => {
-          const title = product.title.toLowerCase();
-          const brand = product.brand.toLowerCase();
-          const description = product.description.toLowerCase();
-          const category = product.category.toLowerCase();
-      
-          // Create a unique identifier for the product
-          const productIdentifier = `${title}${brand}${description}${category}`.toLowerCase();
-      
-          if (uniqueProducts.has(productIdentifier)) {
-            
-            return false;
-          } else {
-           
-            uniqueProducts.add(productIdentifier);
-      
-            return (
-              title.includes(queryLowerCase) ||
-              brand.includes(queryLowerCase) ||
-              description.includes(queryLowerCase) ||
-              category.includes(queryLowerCase)
-            );
-          }
+    const product = useSelector((state) => state.product.product);
+    const [filteredProduct, setFilteredProduct] = useState([]);
+    const { query } = useParams();
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 2;
+
+    function getAllFilteredProduct() {
+        const fuse = new Fuse(product, {
+            keys: ['title', 'brand', 'description', 'category'],
+            threshold: 0.3,
+            includeScore: true,
         });
-      
-        setFilteredProduct(filteredProducts);
+
+        if (!query.trim()) {
+            setFilteredProduct(product);
+            return;
+        }
+
+        const results = fuse.search(query);
+        setFilteredProduct(results.map(result => result.item));
     }
-useEffect(()=>{
-    getAllFilteredProduct()
-},[query,product]);
-  
-  return (
-    <div class="py-3 py-md-5 bg-light">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h4 class="mb-4" style={{textAlign:'center'}}>Our Products</h4>
+
+    useEffect(() => {
+        getAllFilteredProduct();
+        setCurrentPage(1); // Reset to first page on new search
+    }, [query, product]);
+
+    const totalPages = Math.ceil(filteredProduct.length / pageSize);
+    const paginatedProducts = filteredProduct.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+    );
+
+    return (
+        <div className="py-3 py-md-5 bg-light">
+            <div className="container">
+                <div className="row">
+                    <div className="col-md-12">
+                        <h4 className="mb-4" style={{ textAlign: 'center' }}>Our Products</h4>
+                    </div>
+                    {paginatedProducts.map((item, index) => (
+                        <ProductCard key={item.id || index} item={item} />
+                    ))}
+                </div>
+                {filteredProduct.length > pageSize && (
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        setCurrentPage={setCurrentPage}
+                    />
+                )}
             </div>
-            {
-                filteredProduct.map((item,index)=>{
-                    return <ProductCard key={index} item={item}/>
-            })
-            }
         </div>
-    </div>
-</div>
-  )
-}
+    );
+};

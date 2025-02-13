@@ -3,12 +3,17 @@ import '../pages/Cart.css'
 import { useDispatch } from 'react-redux'
 import { removeFromWishList } from '../redux/slices/wishSlice'
 import { add } from '../redux/slices/cartSlice'
+import {toast} from 'react-hot-toast'
 export const WishListCard = ({ item }) => {
     const dispatch = useDispatch();
     const removeFromWishListHandler = () => {
         dispatch(removeFromWishList(item));
     }
     const addToCartHandler=()=>{
+        if(item.stock===0){
+            toast.error("Product is out of stock")
+            return;
+        }
         dispatch(add(item));
     }
     return (
