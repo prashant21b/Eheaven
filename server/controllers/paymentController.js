@@ -140,7 +140,7 @@ exports.paymentVerification = async (req, res) => {
           }
 
           res.redirect(
-              ` https://eheaven.vercel.app/paymentsuccess?reference=${razorpay_payment_id}`
+              `https://eheaven.vercel.app/paymentsuccess?reference=${razorpay_payment_id}`
           );
           
       } else {
